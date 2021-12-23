@@ -1,14 +1,19 @@
-
 <!DOCTYPE html>
-{% extends "base.html" %}
-
-{% block content %}
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <style>
-
+footer {
+   position: fixed;
+   left: 0;
+   bottom: 0;
+   width: 100%;
+   height: 9%;
+   background-color: black;
+   color: white;
+   text-align: center;
+}
 div.gallery {
   margin: 5px;
   border: 1px solid #ccc;
@@ -44,7 +49,7 @@ body {
 
 .navbar a {
   float: left;
-  font-size: 16px;
+  font-size: 20px;
   color: white;
   text-align: center;
   padding: 14px 16px;
@@ -126,30 +131,60 @@ body {
 .card button:hover {
   opacity: 0.7;
 }
+
 </style>
 </head>
 <body>
 
 
-{% for i in name %}
-<form action="cart" method=post>
+<div class="navbar">
+  <a href="http://127.0.0.1:5000/">Home</a>
+  <a href="display"><i class="fa badge fa-lg" value=8>&#xf07a;</i>
 
-<div class="gallery">
-  <a target="_blank" href="img_forest.jpg">
-    <img src="../static/{{ i[7] }}.jpg" alt="Forest" width="600" height="400">
-  </a>
-  <div class="desc">{{ i[1] | truncate(25) }}</div>
+ ( {{ car_count  }} )</a>
+  <div class="dropdown">
+    <button class="dropbtn">Our Products
+      <i class="fa fa-caret-down"></i>
+    </button>
+    <div class="dropdown-content">
+      {% for i in names %}
+      <a href={{ i[6] }}>{{ i[6] }}</a>
+      {% endfor %}
+    </div>
+  </div>
 
-    <li><a href="{{url_for('cart', type =  i[7]  )}}">Add To Cart</a></li>
+  <div class="dropdown">
+    <button class="dropbtn">Account & Lists
+      <i class="fa fa-caret-down"></i>
+    </button>
+    <div class="dropdown-content">
+      <a href="login">Sign in</a>
+      <a href="register">Create your account</a>
+      <a href="order_history">Your Orders</a>
 
     </div>
 
+  </div>
+
+   {% if  User_Name != None  %}
+ <p style="font-size:15px; color:blue";>Hi Welcome {{ User_Name }}</p>
+  {% endif %}
+
+
 </div>
 
-  {% endfor %}
 
+  <footer>
+  <p>Author: Amshla Ramakanth<br>
+  <a href="mailto:hege@example.com">hege@example.com</a></p>
+</footer>
 </div>
 </form>
+
+{% block content %}
+
+{% endblock content %}
+
 </body>
+
 </html>
-{% endblock %}

@@ -59,8 +59,8 @@ def cart(records=None):
         cur.execute("select * from grocerylist;")
         cur.connection.commit()
         records  =cur.fetchall()
-        return render_template('index.html', name=records,car_count = len(l),User_Name = User_Name)
-    return render_template('index.html',name=records, car_count = len(l),User_Name = User_Name)
+        return render_template('index.html',name =grocerylist_records ,names = grocerylist_recordss,car_count = len(l),User_Name = User_Name)
+    return render_template('index.html',name =grocerylist_records ,names = grocerylist_recordss,car_count = len(l),User_Name = User_Name)
 
 total_price = None
 @app.route('/display', methods=['GET', 'POST'])
@@ -91,11 +91,10 @@ def display(records=None):
             #print(type(records[i][3]))
             s = s+ float(records[i][3])
         total_price = s
-    return render_template('display.html',name =records ,price = s,car_count = len(l))
+    return render_template('display.html',name =records ,price = s,car_count = len(l),names = grocerylist_recordss,User_Name = User_Name)
 records_checkout = None
 @app.route('/checkout', methods=['GET', 'POST'])
 def checkout(records=None):
-
 
     if curently_login == True:
         global l, records_checkout
@@ -125,11 +124,12 @@ def checkout(records=None):
             for i in range(len(records)):
                 # print(type(records[i][3]))
                 s = s + float(records[i][3])
+
             # print(s)
     else:
-        return render_template('login.html')
+        return render_template('login.html',names = grocerylist_recordss,User_Name = User_Name)
 
-    return render_template('checkout.html',name =records ,price = s,car_count = len(l))
+    return render_template('checkout.html',name =records ,price = s,car_count = len(l),names = grocerylist_recordss,User_Name = User_Name)
 
 invoice_data = []
 Tax = 0.075
@@ -157,10 +157,20 @@ def invoice():
     msg.html = render_template( 'invoice.html',invoice_data =  invoice_data,records_checkout = records_checkout,total_price = total_price,Tax = Tax,Grand_total = Grand_total)
     mail.send(msg)
 
+
+    for values in range(len(l)):
+        request.method == "GET"
+        cur = mysql.connection.cursor()
+        query_string = "insert into order_history (email_id,order_id,item_Name,item_code,total_cose) values(%s,%s,%s,%s,%s);"
+        cur.execute(query_string, (User_Email,1,records_checkout[values][1],l[values],records_checkout[values][3]))
+        cur.connection.commit()
+
+    print(User_Email,records_checkout)
+
     l.clear()
 
 
-    return render_template( 'invoice.html',invoice_data =  invoice_data,records_checkout = records_checkout,total_price = total_price,Tax = Tax,Grand_total = Grand_total)
+    return render_template( 'invoice.html',invoice_data =  invoice_data,records_checkout = records_checkout,total_price = total_price,Tax = Tax,Grand_total = Grand_total,names = grocerylist_recordss,User_Name = User_Name)
 
 @app.route('/<name>', methods=['GET', 'POST'])
 def add(name):
@@ -172,14 +182,14 @@ def add(name):
     cur.connection.commit()
     records = cur.fetchall()
 
-    return render_template( 'drwopdown.html',name =records )
+    return render_template( 'drwopdown.html',name =records ,names = grocerylist_recordss,User_Name = User_Name)
 
-
+User_Email = None
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    global curently_login,loging_error_message,User_Name
+    global curently_login,loging_error_message,User_Name,User_Email
     if request.method == "POST":
-        print('login')
+        #User_Email = request.form.get("uname")
         uname = request.form.get("uname")
         psw = request.form.get("psw")
         #print(uname, psw)
@@ -194,6 +204,7 @@ def login():
             if uname == login_details[0][1] and psw == login_details[0][6]:
                 curently_login = True
                 User_Name = login_details[0][0]
+                User_Email = login_details[0][1]
                 return render_template('index.html', name=grocerylist_records, names=grocerylist_recordss,
                                        car_count=len(l),User_Name = User_Name)
             else:
@@ -227,14 +238,20 @@ def register():
 
     return render_template('register.html')
 
+order_history_records =None
 
 @app.route('/order_history', methods=['GET', 'POST'])
 def order_history():
+    global order_history_records
+    request.method == "GET"
+    cur = mysql.connection.cursor()
+    query_string = "SELECT * FROM order_history WHERE email_id = %s"
+    cur.execute(query_string, (User_Email,))
+    cur.connection.commit()
+    order_history_records = cur.fetchall()
+    print(order_history_records)
 
-    print(invoice_data)
-
-
-    return render_template('order_history.html',invoice_data = invoice_data)
+    return render_template('order_history.html',records = order_history_records,names = grocerylist_recordss,User_Name = User_Name,car_count = len(l))
 
 if __name__ == '__main__':
 

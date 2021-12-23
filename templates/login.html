@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
@@ -67,7 +68,9 @@ span.psw {
 </style>
 </head>
 <body>
+{% extends "base.html" %}
 
+{% block content %}
 <h2>Login Form</h2>
 
 <form action="login" method=post>
@@ -97,4 +100,5 @@ span.psw {
 </form>
 
 </body>
+{% endblock content %}
 </html>
