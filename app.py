@@ -6,6 +6,7 @@ from DatabaseConnection import conneciton
 
 from flask_mysqldb import MySQL
 from flask_mail import Mail, Message
+import datetime;
 
 app = Flask(__name__)
 app  = conneciton(app)
@@ -19,9 +20,16 @@ app.config['MAIL_USE_SSL'] = True
 mail = Mail(app)
 l=[]
 form_data = None
+grocerylist_records = None
+grocerylist_recordss = None
+curently_login = False
+loging_error_message = None
+
+User_Name = None
 
 @app.route('/')
 def home():
+    global grocerylist_records,grocerylist_recordss,l
     if request.method == "GET":
         request.method == "GET"
         cur = mysql.connection.cursor()
@@ -30,10 +38,10 @@ def home():
         curr.execute("select * from grocerylist;")
         curr.connection.commit()
         cur.connection.commit()
-        records = cur.fetchall()
-        recordss = curr.fetchall()
+        grocerylist_records = cur.fetchall()
+        grocerylist_recordss = curr.fetchall()
         #print(recordss)
-    return render_template('index.html',name =records ,names = recordss,car_count = len(l))
+    return render_template('index.html',name =grocerylist_records ,names = grocerylist_recordss,car_count = len(l),User_Name = User_Name)
     #return render_template('checkout.html')
 
     return render_template('index.html')
@@ -51,8 +59,8 @@ def cart(records=None):
         cur.execute("select * from grocerylist;")
         cur.connection.commit()
         records  =cur.fetchall()
-        return render_template('index.html', name=records,car_count = len(l))
-    return render_template('index.html',name=records, car_count = len(l))
+        return render_template('index.html', name=records,car_count = len(l),User_Name = User_Name)
+    return render_template('index.html',name=records, car_count = len(l),User_Name = User_Name)
 
 total_price = None
 @app.route('/display', methods=['GET', 'POST'])
@@ -87,34 +95,40 @@ def display(records=None):
 records_checkout = None
 @app.route('/checkout', methods=['GET', 'POST'])
 def checkout(records=None):
-    global l,records_checkout
-    selected_id = request.args.get('type')
-    print(l)
-    if selected_id in l:
-        l.remove(selected_id)
+
+
+    if curently_login == True:
+        global l, records_checkout
+        selected_id = request.args.get('type')
         print(l)
-    if request.method == "GET":
-        cur = mysql.connection.cursor()
-        #query = "select * from products where productCode IN %s" %str(l)
-        id_tuple = tuple(l)
+        if selected_id in l:
+            l.remove(selected_id)
+            print(l)
+        if request.method == "GET":
+            cur = mysql.connection.cursor()
+            # query = "select * from products where productCode IN %s" %str(l)
+            id_tuple = tuple(l)
 
-        if len(id_tuple) > 1:
-            query = 'SELECT * FROM grocerylist WHERE Item_Code IN {};'.format(id_tuple)
-            cur.execute(query)
-        else:
-            g = id_tuple[0]
-            query_string = "SELECT * FROM grocerylist WHERE Item_Code = %s"
-            cur.execute(query_string, (g,))
+            if len(id_tuple) > 1:
+                query = 'SELECT * FROM grocerylist WHERE Item_Code IN {};'.format(id_tuple)
+                cur.execute(query)
+            else:
+                g = id_tuple[0]
+                query_string = "SELECT * FROM grocerylist WHERE Item_Code = %s"
+                cur.execute(query_string, (g,))
 
-        cur.connection.commit()
-        records  =cur.fetchall()
+            cur.connection.commit()
+            records = cur.fetchall()
 
-        records_checkout = records
-        s = 0
-        for i in range(len(records)):
-            #print(type(records[i][3]))
-            s = s+ float(records[i][3])
-        #print(s)
+            records_checkout = records
+            s = 0
+            for i in range(len(records)):
+                # print(type(records[i][3]))
+                s = s + float(records[i][3])
+            # print(s)
+    else:
+        return render_template('login.html')
+
     return render_template('checkout.html',name =records ,price = s,car_count = len(l))
 
 invoice_data = []
@@ -161,34 +175,66 @@ def add(name):
     return render_template( 'drwopdown.html',name =records )
 
 
-'''@app.route('/Update', methods=['GET', 'POST'])
-def Update(records=None):
-
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    global curently_login,loging_error_message,User_Name
     if request.method == "POST":
-        global form_data,l
-        form_data = request.form['ftname']
-        l.append(form_data)
-        print(l)
+        print('login')
+        uname = request.form.get("uname")
+        psw = request.form.get("psw")
+        #print(uname, psw)
         request.method == "GET"
         cur = mysql.connection.cursor()
-        query = "select * from products;"
-        cur.execute(query)
+        query_string = "SELECT * FROM login WHERE email_id = %s"
+        cur.execute(query_string, (uname,))
         cur.connection.commit()
-        return render_template('updating.html')
+        login_details = cur.fetchall()
 
-    return render_template('Update.html')
+        if len(login_details)>=1:
+            if uname == login_details[0][1] and psw == login_details[0][6]:
+                curently_login = True
+                User_Name = login_details[0][0]
+                return render_template('index.html', name=grocerylist_records, names=grocerylist_recordss,
+                                       car_count=len(l),User_Name = User_Name)
+            else:
+                loging_error_message = "user name and password is not mateching please try again"
+
+                return render_template('login.html', loging_error_message=loging_error_message)
+
+    return render_template('login.html')
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    global curently_login,loging_error_message,User_Name
+    if request.method == "POST":
+        Username = request.form.get("UserName")
+        email = request.form.get("email")
+        psw = request.form.get("psw")
+        re_psw = request.form.get("psw-repeat")
+        crated_date = datetime.datetime.now()
+        #print(uname, psw)
+
+        if psw == re_psw:
+            request.method == "GET"
+            cur = mysql.connection.cursor()
+            query_string = "insert into login (username,email_id,created_time,password) values(%s,%s,%s,%s);"
+            cur.execute(query_string, (Username,email,crated_date,psw))
+            cur.connection.commit()
+            #login_details = cur.fetchall()
+            print('sucess')
+
+            return render_template('login.html', loging_error_message=loging_error_message)
+
+    return render_template('register.html')
 
 
+@app.route('/order_history', methods=['GET', 'POST'])
+def order_history():
 
-@app.route('/Delete', methods=['GET', 'POST'])
-def Delete(records=None):
-    if request.method == "GET":
-        cur = mysql.connection.cursor()
-        cur.execute("select * from grocerylist")
-        cur.connection.commit()
-        records  =cur.fetchall()
+    print(invoice_data)
 
-    return render_template('Delete.html')'''
+
+    return render_template('order_history.html',invoice_data = invoice_data)
 
 if __name__ == '__main__':
 

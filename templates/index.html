@@ -142,15 +142,21 @@ body {
   </div>
 
   <div class="dropdown">
-    <button class="dropbtn">Dropdown
+    <button class="dropbtn">Account & Lists
       <i class="fa fa-caret-down"></i>
     </button>
     <div class="dropdown-content">
-      <a href="#">Link 1</a>
-      <a href="#">Link 2</a>
-      <a href="#">Link 3</a>
+      <a href="login">Sign in</a>
+      <a href="register">Create your account</a>
+      <a href="order_history">Your Orders</a>
+
     </div>
+
   </div>
+
+  <p>  {% if  User_Name != None  %}
+Hi {{ User_Name }}
+  {% endif %}</p>
 </div>
 
 
