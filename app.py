@@ -1,6 +1,7 @@
 from email.mime.text import MIMEText
 
 from flask import Flask, render_template, request
+from numpy import double
 
 from DatabaseConnection import conneciton
 
@@ -67,10 +68,11 @@ total_price = None
 def display(records=None):
     global l,total_price
     selected_id = request.args.get('type')
+    print(l[-1])
     print(l)
     if selected_id in l:
         l.remove(selected_id)
-        print(l)
+        #print(l)
     if request.method == "GET":
         cur = mysql.connection.cursor()
         #query = "select * from products where productCode IN %s" %str(l)
@@ -80,16 +82,20 @@ def display(records=None):
             query = 'SELECT * FROM grocerylist WHERE Item_Code IN {};'.format(id_tuple)
             cur.execute(query)
         else:
+            if len(id_tuple)<=0:
+                return render_template('index.html', name=grocerylist_records, names=grocerylist_recordss,
+                                       car_count=len(l), User_Name=User_Name)
+
             g = id_tuple[0]
             query_string = "SELECT * FROM grocerylist WHERE Item_Code = %s"
             cur.execute(query_string, (g,))
 
         cur.connection.commit()
-        records  =cur.fetchall()
+        records = cur.fetchall()
         s = 0
         for i in range(len(records)):
-            #print(type(records[i][3]))
-            s = s+ float(records[i][3])
+            s = s+float(records[i][3])
+            s = float("{:.2f}".format(s))
         total_price = s
     return render_template('display.html',name =records ,price = s,car_count = len(l),names = grocerylist_recordss,User_Name = User_Name)
 records_checkout = None
@@ -175,13 +181,10 @@ def invoice():
 @app.route('/<name>', methods=['GET', 'POST'])
 def add(name):
     cur = mysql.connection.cursor()
-
     query_string = "SELECT * FROM grocerylist WHERE Item_Type = %s"
-
     cur.execute(query_string, (name,))
     cur.connection.commit()
     records = cur.fetchall()
-
     return render_template( 'drwopdown.html',name =records ,names = grocerylist_recordss,User_Name = User_Name)
 
 User_Email = None
@@ -199,7 +202,6 @@ def login():
         cur.execute(query_string, (uname,))
         cur.connection.commit()
         login_details = cur.fetchall()
-
         if len(login_details)>=1:
             if uname == login_details[0][1] and psw == login_details[0][6]:
                 curently_login = True
@@ -233,9 +235,7 @@ def register():
             cur.connection.commit()
             #login_details = cur.fetchall()
             print('sucess')
-
             return render_template('login.html', loging_error_message=loging_error_message)
-
     return render_template('register.html')
 
 order_history_records =None
@@ -250,10 +250,20 @@ def order_history():
     cur.connection.commit()
     order_history_records = cur.fetchall()
     print(order_history_records)
-
     return render_template('order_history.html',records = order_history_records,names = grocerylist_recordss,User_Name = User_Name,car_count = len(l))
+name = None
+@app.route('/s/<name>', methods=['GET', 'POST'])
+def product_overview(name):
+    cur = mysql.connection.cursor()
+    query_string = "SELECT * FROM grocerylist WHERE Item_Code = %s"
+    cur.execute(query_string, (name,))
+    cur.connection.commit()
+    records = cur.fetchall()
+
+    print(records)
+
+    return render_template('/product_overview.html',records = records[0],names = grocerylist_recordss,User_Name = User_Name,car_count = len(l))
 
 if __name__ == '__main__':
-
     app.run()
 

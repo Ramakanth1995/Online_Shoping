@@ -24,14 +24,10 @@ tr:nth-child(even) {
 </head>
 <body>
 	<table>
+{% for i in name %}
+		<tr>
+			<th><img src="../static/{{ i[7] }}.jpg" alt="Forest" width="150" height="180"></th>
 
-		<tr>
-			<th>productCode</th>
-			<th>productName</th>
-			<th>MSRP</th>
-		</tr>{% for i in name %}
-		<tr>
-			<td>{{ i[7] }}</td>
 			<td>{{ i[1] }}</td>
 			<td>{{ i[3] }} </td><td><li><a href="{{url_for('display', type =  i[7]  )}}">clear</a></li></td>
 		</tr>  {% endfor %}
