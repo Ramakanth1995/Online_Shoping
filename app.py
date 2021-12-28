@@ -254,7 +254,7 @@ def order_history():
     cur.execute(query_string, (User_Email,))
     cur.connection.commit()
     order_history_records = cur.fetchall()
-    print(order_history_records)
+    print(len(order_history_records))
     return render_template('order_history.html',records = order_history_records,names = grocerylist_recordss,User_Name = User_Name,car_count = len(l))
 name = None
 @app.route('/s/<name>', methods=['GET', 'POST'])
