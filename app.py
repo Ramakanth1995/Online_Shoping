@@ -276,6 +276,15 @@ def product_overview(name):
 
     return render_template('/product_overview.html',records = records[0],names = grocerylist_recordss,User_Name = User_Name,car_count = len(l))
 
+@app.route('/signout', methods=['GET', 'POST'])
+def signout():
+    global curently_login,car_count,User_Name,name,names
+    curently_login = False
+    car_count = l.clear()
+    User_Name = None
+
+    return render_template('index.html',name =grocerylist_records ,names = grocerylist_recordss,car_count = len(l),User_Name = User_Name)
+
 if __name__ == '__main__':
     app.run()
 
