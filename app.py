@@ -64,12 +64,13 @@ def cart(records=None):
     return render_template('index.html',name =grocerylist_records ,names = grocerylist_recordss,car_count = len(l),User_Name = User_Name)
 
 total_price = None
+selected_id = None
+
 @app.route('/display', methods=['GET', 'POST'])
 def display(records=None):
     global l,total_price
     selected_id = request.args.get('type')
-    print(l[-1])
-    print(l)
+
     if selected_id in l:
         l.remove(selected_id)
         #print(l)
@@ -99,21 +100,23 @@ def display(records=None):
         total_price = s
     return render_template('display.html',name =records ,price = s,car_count = len(l),names = grocerylist_recordss,User_Name = User_Name)
 records_checkout = None
+moreprod_rec = None
 @app.route('/checkout', methods=['GET', 'POST'])
 def checkout(records=None):
 
     if curently_login == True:
-        global l, records_checkout
+        global l, records_checkout,moreprod_rec
         selected_id = request.args.get('type')
+        print(selected_id)
+        moreprod_rec = selected_id
         print(l)
         if selected_id in l:
             l.remove(selected_id)
-            print(l)
         if request.method == "GET":
             cur = mysql.connection.cursor()
-            # query = "select * from products where productCode IN %s" %str(l)
+            if (selected_id) != None:
+                l.append(selected_id)
             id_tuple = tuple(l)
-
             if len(id_tuple) > 1:
                 query = 'SELECT * FROM grocerylist WHERE Item_Code IN {};'.format(id_tuple)
                 cur.execute(query)
@@ -124,14 +127,13 @@ def checkout(records=None):
 
             cur.connection.commit()
             records = cur.fetchall()
-
             records_checkout = records
+            print(records_checkout)
             s = 0
             for i in range(len(records)):
                 # print(type(records[i][3]))
                 s = s + float(records[i][3])
-
-            # print(s)
+            print(s)
     else:
         return render_template('login.html',names = grocerylist_recordss,User_Name = User_Name)
 
@@ -177,7 +179,7 @@ def invoice():
 
 
     return render_template( 'invoice.html',invoice_data =  invoice_data,records_checkout = records_checkout,total_price = total_price,Tax = Tax,Grand_total = Grand_total,names = grocerylist_recordss,User_Name = User_Name)
-
+more_products = None
 @app.route('/<name>', methods=['GET', 'POST'])
 def add(name):
     cur = mysql.connection.cursor()
@@ -185,6 +187,7 @@ def add(name):
     cur.execute(query_string, (name,))
     cur.connection.commit()
     records = cur.fetchall()
+    more_products = records
     return render_template( 'drwopdown.html',name =records ,names = grocerylist_recordss,User_Name = User_Name)
 
 User_Email = None
@@ -192,9 +195,10 @@ User_Email = None
 def login():
     global curently_login,loging_error_message,User_Name,User_Email
     if request.method == "POST":
+
         #User_Email = request.form.get("uname")
-        uname = request.form.get("uname")
-        psw = request.form.get("psw")
+        uname = request.form.get("username")
+        psw = request.form.get("password")
         #print(uname, psw)
         request.method == "GET"
         cur = mysql.connection.cursor()
@@ -203,6 +207,7 @@ def login():
         cur.connection.commit()
         login_details = cur.fetchall()
         if len(login_details)>=1:
+            print('ddddddddddd')
             if uname == login_details[0][1] and psw == login_details[0][6]:
                 curently_login = True
                 User_Name = login_details[0][0]
@@ -220,13 +225,13 @@ def login():
 def register():
     global curently_login,loging_error_message,User_Name
     if request.method == "POST":
-        Username = request.form.get("UserName")
+        Username = request.form.get("username")
         email = request.form.get("email")
-        psw = request.form.get("psw")
-        re_psw = request.form.get("psw-repeat")
-        crated_date = datetime.datetime.now()
-        #print(uname, psw)
+        psw = request.form.get("password")
+        re_psw = request.form.get("pass")
 
+        crated_date = datetime.datetime.now()
+        print(psw, re_psw)
         if psw == re_psw:
             request.method == "GET"
             cur = mysql.connection.cursor()
@@ -260,7 +265,14 @@ def product_overview(name):
     cur.connection.commit()
     records = cur.fetchall()
 
-    print(records)
+    '''#print(name)
+    starts_with = name[0:3]
+    cur = mysql.connection.cursor()
+    query_string = "SELECT * FROM grocerylist WHERE Item_Code like s%"
+    cur.execute(query_string, (starts_with,))
+    cur.connection.commit()
+    more_products = cur.fetchall()
+    print(more_products)'''
 
     return render_template('/product_overview.html',records = records[0],names = grocerylist_recordss,User_Name = User_Name,car_count = len(l))
 

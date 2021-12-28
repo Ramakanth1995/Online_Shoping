@@ -1,224 +1,139 @@
-<!DOCTYPE html>
-
-{% extends "base.html" %}
-
-{% block content %}
-<html>
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<style>
-@import url('https://fonts.googleapis.com/css?family=Lato:400,700');
-$font: 'Lato', sans-serif;
-
-$white: #F5F5F5;
-$light: #E0C9CB;
-$tan: #C3A1A0;
-$pink: #D9AAB7;
-$rose: #BA7E7E;
-$dark: #4E4E4E;
-
-/* center container in the middle */
-html {
-  display: grid;
-  min-height: 100%;
+<!doctype html>
+                        <html>
+                            <head>
+                                <meta charset='utf-8'>
+                                <meta name='viewport' content='width=device-width, initial-scale=1'>
+                                <title>Snippet - GoSNippets</title>
+                                <link href='https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css' rel='stylesheet'>
+                                <link href='' rel='stylesheet'>
+                                <style>body {
+    font-family: 'Roboto Condensed', sans-serif;
+    background-color: #f5f5f5
 }
 
-body {
-  display: grid;
-  background: $light;
-  font-family: $font, sans-serif;
-  text-transform: uppercase;
+.hedding {
+    font-size: 20px;
+    color: #ab8181`;
 }
 
-.container {
-  position: relative;
-  margin: auto;
-  overflow: hidden;
-  width: 520px;
-  height: 350px;
-  background: $white;
-  box-shadow: 5px 5px 15px rgba($rose, .5);
-  border-radius: 10px;
+.main-section {
+    position: absolute;
+    left: 50%;
+    right: 50%;
+    transform: translate(-50%, 5%);
 }
 
-p {
-  font-size: 0.6em;
-  color: $rose;
-  letter-spacing: 1px;
+.left-side-product-box img {
+    width: 100%;
 }
 
-h1 {
-  font-size: 1.2em;
-  color: $dark;
-  margin-top: -5px;
+.left-side-product-box .sub-img img {
+    margin-top: 5px;
+    width: 83px;
+    height: 100px;
 }
 
-h2 {
-  color: $tan;
-  margin-top: -5px;
+.right-side-pro-detail span {
+    font-size: 15px;
 }
 
-img {
-  width: 290px;
-  margin-top: 60px;
+.right-side-pro-detail p {
+    font-size: 25px;
+    color: #a1a1a1;
 }
 
-.slideshow-buttons {
-  top: 70%;
-  display: none;
+.right-side-pro-detail .price-pro {
+    color: #E45641;
 }
 
-.one, .two, .three, .four {
-  position: absolute;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: $light;
+.right-side-pro-detail .tag-section {
+    font-size: 18px;
+    color: #5D4C46;
 }
 
-.one {
-  left: 22%;
-}
-.two {
-  left: 27%;
-}
-.three {
-  left: 32%;
-}
-.four {
-  left: 37%;
+.pro-box-section .pro-box img {
+    width: 100%;
+    height: 200px;
 }
 
-.product {
-  position: absolute;
-  width: 40%;
-  height: 100%;
-  top: 10%;
-  left: 60%;
-}
-
-.desc {
-  text-transform: none;
-  letter-spacing: 0;
-  margin-bottom: 17px;
-  color: $dark;
-  font-size: .7em;
-  line-height: 1.6em;
-  margin-right: 25px;
-  text-align: justify;
-}
-
-button {
-  background: darken($light, 10%);
-  padding: 10px;
-  display: inline-block;
-  outline: 0;
-  border: 0;
-  margin: -1px;
-  border-radius: 2px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: $white;
-  cursor: pointer;
-  &:hover {
-    background: $rose;
-    transition: all .4s ease-in-out;
-  }
-}
-
-.add {
-  width: 67%;
-}
-
-.like {
-  width: 22%;
-}
-
-.sizes {
-  display: grid;
-  color: $pink;
-  grid-template-columns: repeat(auto-fill, 30px);
-  width: 60%;
-  grid-gap: 4px;
-  margin-left: 20px;
-  margin-top: 5px;
-  &:hover {
-    cursor: pointer;
-  }
-}
-
-.pick {
-  margin-top: 11px;
-  margin-bottom:0;
-  margin-left: 20px;
-}
-
-.size {
-  padding: 9px;
-  border: 1px solid $light;
-  font-size: 0.7em;
-  text-align: center;
-  &:hover{
-    background: $rose;
-    color: $white;
-    transition: all .4s ease-in-out;
-  }
-}
-
-.focus{
-  background: $rose;
-  color: $white;
-}
-
-footer {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  font-size: 0.8em;
-  text-transform: uppercase;
-  padding: 10px;
-  p {
-    letter-spacing: 3px;
-  }
-  a {
-    color: #ffffff;
-    text-decoration: none;
-    &:hover {
-      color: #7d7d7d;
+@media (min-width:360px) and (max-width:640px) {
+    .pro-box-section .pro-box img {
+        height: auto;
     }
-  }
 }
 </style>
-</head>
-<body>
-<div class="container">
-  <div class="images">
-    <img src="../static/{{ records[7] }}.jpg" />
-  </div>
-  <div class="slideshow-buttons">
-    <div class="one"></div>
-    <div class="two"></div>
-    <div class="three"></div>
-    <div class="four"></div>
-  </div>
+                                <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
+                                <script type='text/javascript' src='https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js'></script>
+                                <script type='text/javascript' src='https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js'></script>
+                            </head>
+                            <body oncontextmenu='return false' class='snippet-body'>
+                            <div class="container">
+                                <form method="POST" action="/checkout">
+    <div class="col-lg-8 border p-3 main-section bg-white">
+        <div class="row hedding m-0 pl-3 pt-0 pb-3">
 
-  <div class="product">
-    <p>{{ records[5] }}</p>
-    <h1>{{ records[1] }}</h1>
-    <h2>Rs.. {{ records[3] }}</h2>
-    <p class="desc">fjjfkdjfdjsfdfnnf jdfdsklfusio iodhfiojoifjo fijsdf ihofiidjf hihfiodfodfiijef iojiofjoidsjf iojiofjosdj</p>
-    <div class="buttons">
-      <button class="add">Buy Now</button>
-    </div>
-  </div>
+        </div>
+        <div class="row m-0">
+            <div class="col-lg-4 left-side-product-box pb-3">
+                <img src="../static/{{ records[7] }}.jpg" class="border p-3">
+                <span class="sub-img">
+                    <img src="../static/{{ records[7] }}.jpg" class="border p-2">
+                    <img src="../static/{{ records[7] }}.jpg" class="border p-2">
+                    <img src="../static/{{ records[7] }}.jpg" class="border p-2">
+                </span>
+            </div>
+            <div class="col-lg-8">
+                <div class="right-side-pro-detail border p-3 m-0">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <span>{{ records[5] }}</span>
+                            <p class="m-0 p-0">{{ records[1] }}</p>
+                        </div>
+                        <div class="col-lg-12">
+                            <p class="m-0 p-0 price-pro">Rs.. {{ records[3] }}</p>
+                            <hr class="p-0 m-0">
+                        </div>
+                        <div class="col-lg-12 pt-2">
+                            <h5>Product Detail</h5>
+                            <span>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                                tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                                quis nostrud exercitation ullamco laboris.</span>
+                            <hr class="m-0 pt-2 mt-2">
+                        </div>
+                        <div class="col-lg-12">
+                        </div>
+                        <div class="col-lg-12">
+                            <h6>Quantity :</h6>
+                            <input type="number" name = 'quatiity' class="form-control text-center w-100" value="1">
+                        </div>
+                        <div class="col-lg-12 mt-3">
+                            <div class="row">
+                                <div class="col-lg-6 pb-2">
+                                    <a href="{{url_for('cart', type =  records[7] )}}" class="btn btn-danger w-100">Add To Cart</a>
+                                </div>
+                                <div class="col-lg-6">
+                                    <a href="{{url_for('checkout', type =  records[7] )}}" class="btn btn-success w-100">Shop Now</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 text-center pt-3">
+                <h4>More Product</h4>
+            </div>
+        </div>{% for i in more_products %}
+        <div class="row mt-3 p-0 text-center pro-box-section">
+            <div class="col-lg-3 pb-2">
+                <div class="pro-box border p-0 m-0">
+                    <img src="http://nicesnippets.com/demo/pd-b-image1.jpg">
+                </div>
+            </div>
+
+    </div>{% endfor %}
 </div>
-
-<footer>
-  <p>made by <a href="https://codepen.io/juliepark"> julie</a> ♡
-</footer>
-
-</body>
-
-</html>
-{% endblock %}
+                            <script type='text/javascript'></script>
+                            </body>
+                        </html>
