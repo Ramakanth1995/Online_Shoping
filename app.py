@@ -49,7 +49,7 @@ def home():
 
 @app.route('/cart',methods=['GET', 'POST'])
 def cart(records=None):
-    global form_data, l
+    global form_data, l,curently_login
     if request.method == "GET":
         #form_data = request.form.get('id')
         form_data = request.args.get('type')
@@ -57,9 +57,21 @@ def cart(records=None):
         request.method == "GET"
         cur = mysql.connection.cursor()
         curr = mysql.connection.cursor()
+        cart_records = mysql.connection.cursor()
         cur.execute("select * from grocerylist;")
         cur.connection.commit()
-        records  =cur.fetchall()
+        records = cur.fetchall()
+        if curently_login == True:
+            q = "select item_code from cart where email = %s;"
+            cart_records.execute(q, (User_Name,))
+            cart_records.connection.commit()
+            cart_records = cart_records.fetchall()
+
+            for rows in cart_records:
+                l.append(rows[0])
+            k = set(l)
+            l = list(k)
+
         return render_template('index.html',name =grocerylist_records ,names = grocerylist_recordss,car_count = len(l),User_Name = User_Name)
     return render_template('index.html',name =grocerylist_records ,names = grocerylist_recordss,car_count = len(l),User_Name = User_Name)
 
@@ -193,7 +205,7 @@ def add(name):
 User_Email = None
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    global curently_login,loging_error_message,User_Name,User_Email
+    global curently_login,loging_error_message,User_Name,User_Email,l
     if request.method == "POST":
 
         #User_Email = request.form.get("uname")
@@ -206,12 +218,23 @@ def login():
         cur.execute(query_string, (uname,))
         cur.connection.commit()
         login_details = cur.fetchall()
+        cart_records = mysql.connection.cursor()
         if len(login_details)>=1:
-            print('ddddddddddd')
             if uname == login_details[0][1] and psw == login_details[0][6]:
                 curently_login = True
                 User_Name = login_details[0][0]
                 User_Email = login_details[0][1]
+                if curently_login == True:
+                    q = "select item_code from cart where email = %s;"
+                    cart_records.execute(q, (User_Name,))
+                    cart_records.connection.commit()
+                    cart_records = cart_records.fetchall()
+
+                    for rows in cart_records:
+                        l.append(rows[0])
+                    k = set(l)
+                    l = list(k)
+
                 return render_template('index.html', name=grocerylist_records, names=grocerylist_recordss,
                                        car_count=len(l),User_Name = User_Name)
             else:
@@ -265,23 +288,21 @@ def product_overview(name):
     cur.connection.commit()
     records = cur.fetchall()
 
-    '''#print(name)
-    starts_with = name[0:3]
-    cur = mysql.connection.cursor()
-    query_string = "SELECT * FROM grocerylist WHERE Item_Code like s%"
-    cur.execute(query_string, (starts_with,))
-    cur.connection.commit()
-    more_products = cur.fetchall()
-    print(more_products)'''
-
     return render_template('/product_overview.html',records = records[0],names = grocerylist_recordss,User_Name = User_Name,car_count = len(l))
 
 @app.route('/signout', methods=['GET', 'POST'])
 def signout():
-    global curently_login,car_count,User_Name,name,names
-    curently_login = False
-    car_count = l.clear()
-    User_Name = None
+    global curently_login,car_count,User_Name,name,names,l
+    if curently_login == True:
+        curently_login = False
+        User_Name = None
+        print(l, User_Email)
+        cur = mysql.connection.cursor()
+        for row in l:
+            query_string = "insert into cart (item_code,email) values(%s,%s);"
+            cur.execute(query_string, (row, User_Email))
+            cur.connection.commit()
+        car_count = l.clear()
 
     return render_template('index.html',name =grocerylist_records ,names = grocerylist_recordss,car_count = len(l),User_Name = User_Name)
 
