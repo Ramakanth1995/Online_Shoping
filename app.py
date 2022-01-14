@@ -303,5 +303,5 @@ def signout():
     return render_template('index.html',name =grocerylist_records ,names = grocerylist_recordss,car_count = len(l),User_Name = User_Name)
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
 
