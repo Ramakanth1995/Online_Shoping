@@ -1,10 +1,6 @@
-from email.mime.text import MIMEText
 
 from flask import Flask, render_template, request
-from numpy import double
-
 from DatabaseConnection import conneciton
-
 from flask_mysqldb import MySQL
 from flask_mail import Mail, Message
 import datetime;
