@@ -7,23 +7,13 @@ db = SQLAlchemy(app)
 
 # the class Movie will inherit the db.Model of SQLAlchemy
 class Movie(db.Model):
-    __tablename__ = 'grocerylist'  # creating a table name
+    __tablename__ = 'movies'  # creating a table name
+    id = db.Column(db.Integer, primary_key=True)  # this is the primary key
+    title = db.Column(db.String(80), nullable=False)
+    # nullable is false so the column can't be empty
+    year = db.Column(db.Integer, nullable=False)
+    genre = db.Column(db.String(80), nullable=False)
 
-    Item_Name = db.Column(db.Integer, primary_key=True)
-
-    Quantity_Remain = db.Column(db.Integer)
-
-    Item_Cost = db.Column(db.float)
-
-    Expiry_Date = db.Column(db.Date)
-
-    Manufactured_By = db.Column(db.Date)
-
-    Item_Type = db.Column(db.String(255))
-
-    Item_No = db.Column(db.Integer)
-
-    Item_Code = db.Column(db.String(255))
 
     def json(self):
         return {'id': self.id, 'title': self.title,
@@ -40,6 +30,7 @@ class Movie(db.Model):
 
     def get_all_movies(self):
         '''function to get all movies in our database'''
+        db.create_all()
         return [Movie.json(movie) for movie in Movie.query.all()]
 
     def get_movie(_id):
