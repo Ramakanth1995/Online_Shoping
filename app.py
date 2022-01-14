@@ -1,19 +1,28 @@
 
-from flask import Flask, render_template, request
-from DatabaseConnection import conneciton
+from flask import Flask, render_template, request, jsonify
+import DatabaseConnection as d
 from flask_mysqldb import MySQL
 from flask_mail import Mail, Message
 import datetime;
+from flask_sqlalchemy import SQLAlchemy # new
+
+from movies import Movie
 
 app = Flask(__name__)
-app  = conneciton(app)
+app  = d.conneciton(app)
 mysql = MySQL(app)
+
+'''
 app.config['MAIL_SERVER']='smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
 app.config['MAIL_USERNAME'] = 'pawwan431@gmail.com'
 app.config['MAIL_PASSWORD'] = 'python@123'
 app.config['MAIL_USE_TLS'] = False
-app.config['MAIL_USE_SSL'] = True
+app.config['MAIL_USE_SSL'] = True'''
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db' # new
+db = SQLAlchemy(app) # new
+
 mail = Mail(app)
 l=[]
 form_data = None
@@ -23,7 +32,12 @@ curently_login = False
 loging_error_message = None
 
 User_Name = None
+@app.route('/movies', methods=['GET'])
+def get_movies():
+    '''Function to get all the movies in the database'''
+    return jsonify({'Movies': Movie.get_all_movies()})
 
+'''
 @app.route('/')
 def home():
     global grocerylist_records,grocerylist_recordss,l
@@ -300,7 +314,7 @@ def signout():
             cur.connection.commit()
         car_count = l.clear()
 
-    return render_template('index.html',name =grocerylist_records ,names = grocerylist_recordss,car_count = len(l),User_Name = User_Name)
+    return render_template('index.html',name =grocerylist_records ,names = grocerylist_recordss,car_count = len(l),User_Name = User_Name)'''
 
 if __name__ == '__main__':
     app.run(debug=True)

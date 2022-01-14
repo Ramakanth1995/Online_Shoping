@@ -1,1 +1,1 @@
-web: gunicorn spark:app
+web: gunicorn app:app
