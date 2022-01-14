@@ -1,74 +1,86 @@
-from flask import Flask, request, jsonify
-from flask_sqlalchemy import SQLAlchemy
-from flask_marshmallow import Marshmallow
-import os
+from flask import Flask, make_response, jsonify, request
+import dataset
 
-# Initialize App
 app = Flask(__name__)
-basedir = os.path.abspath(os.path.dirname(__file__))
+db = dataset.connect('sqlite:///api.db')
 
-# Database Setup
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'db.sqlite')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-# Init db
-db = SQLAlchemy(app)
-# Init marshmallow
-ma = Marshmallow(app)
+'''
+Examples:
+GET request to /api/books returns the details of all books
+POST request to /api/books creates a book with the ID 3 (As per request body)
+Sample request body -
+{
+        "book_id": "1",
+        "name": "A Game of Thrones",
+        "author": "George R. R. Martin"
+}
+GET request to /api/books/3 returns the details of book 3
+PUT request to /api/books/3 to update fields of book 3
+DELETE request to /api/books/3 deletes book 3
+'''
 
-
-# Product Class/Model
-class Product(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), unique=True)
-    description = db.Column(db.String(200))
-    price = db.Column(db.Float)
-    qty = db.Column(db.Integer)
-
-    def __init__(self, name, description, price, qty):
-        self.name = name
-        self.description = description
-        self.price = price
-        self.qty = qty
+table = db['books']
 
 
-# Product Schema
-class ProductSchema(ma.Schema):
-    class Meta:
-        fields = ('id', 'name', 'description', 'price', 'qty')
+def fetch_db(book_id):  # Each book scnerio
+    return table.find_one(book_id=book_id)
 
 
-# Init Schema
-product_schema = ProductSchema()
-products_schema = ProductSchema(many=True)
+def fetch_db_all():
+    books = []
+    for book in table:
+        books.append(book)
+    return books
 
 
-# Create Product
-@app.route('/product', methods=['POST'])
-def add_product():
-    method = 'POST'
-    name = request.json['name']
-    description = request.json['description']
-    price = request.json['price']
-    qty = request.json['qty']
+@app.route('/api/db_populate', methods=['GET'])
+def db_populate():
+    table.insert({
+        "book_id": "1",
+        "name": "A Game of Thrones.",
+        "author": "George R. R. Martin"
+    })
 
-    new_product = Product(name, description, price, qty)
+    table.insert({
+        "book_id": "2",
+        "name": "Lord of the Rings",
+        "author": "J. R. R. Tolkien"
+    })
 
-    db.session.add(new_product)
-    db.session.commit()
-
-    return product_schema.jsonify(new_product)
-
-
-# Get All Products
-@app.route('/', methods=['GET'])
-def get_products():
-    all_products = Product.query.all()
-    result = products_schema.dump(all_products)
-    return jsonify(result)
+    return make_response(jsonify(fetch_db_all()),
+                         200)
 
 
-# Run the Server
+@app.route('/', methods=['GET', 'POST'])
+def api_books():
+    if request.method == "GET":
+        return make_response(jsonify(fetch_db_all()), 200)
+    elif request.method == 'POST':
+        content = request.json
+        book_id = content['book_id']
+        table.insert(content)
+        return make_response(jsonify(fetch_db(book_id)), 201)  # 201 = Created
+
+
+@app.route('/api/books/<book_id>', methods=['GET', 'PUT', 'DELETE'])
+def api_each_book(book_id):
+    if request.method == "GET":
+        book_obj = fetch_db(book_id)
+        if book_obj:
+            return make_response(jsonify(book_obj), 200)
+        else:
+            return make_response(jsonify(book_obj), 404)
+    elif request.method == "PUT":  # Updates the book
+        content = request.json
+        table.update(content, ['book_id'])
+
+        book_obj = fetch_db(book_id)
+        return make_response(jsonify(book_obj), 200)
+    elif request.method == "DELETE":
+        table.delete(id=book_id)
+
+        return make_response(jsonify({}), 204)
+
+
 if __name__ == '__main__':
-    db.create_all()
-
     app.run(debug=True)
