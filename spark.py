@@ -1,32 +1,73 @@
-# Using flask to make an api
-# import necessary libraries and functions
-from flask import Flask, jsonify, request
+from flask import Flask, request, jsonify
+from flask_sqlalchemy import SQLAlchemy
+from flask_marshmallow import Marshmallow
+import os
 
-# creating a Flask app
+# Initialize App
 app = Flask(__name__)
+basedir = os.path.abspath(os.path.dirname(__file__))
 
-# on the terminal type: curl http://127.0.0.1:5000/
-# returns hello world when we use GET.
-# returns the data that we send when we use POST.
-@app.route('/', methods = ['GET', 'POST'])
-def home():
-	if(request.method == 'GET'):
-
-		data = "hello world"
-		return jsonify({'data': data})
-
-
-# A simple function to calculate the square of a number
-# the number to be squared is sent in the URL when we use GET
-# on the terminal type: curl http://127.0.0.1:5000 / home / 10
-# this returns 100 (square of 10)
-@app.route('/home/<int:num>', methods = ['GET'])
-def disp(num):
-
-	return jsonify({'data': num**2})
+# Database Setup
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'db.sqlite')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# Init db
+db = SQLAlchemy(app)
+# Init marshmallow
+ma = Marshmallow(app)
 
 
-# driver function
+# Product Class/Model
+class Product(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), unique=True)
+    description = db.Column(db.String(200))
+    price = db.Column(db.Float)
+    qty = db.Column(db.Integer)
+
+    def __init__(self, name, description, price, qty):
+        self.name = name
+        self.description = description
+        self.price = price
+        self.qty = qty
+
+
+# Product Schema
+class ProductSchema(ma.Schema):
+    class Meta:
+        fields = ('id', 'name', 'description', 'price', 'qty')
+
+
+# Init Schema
+product_schema = ProductSchema()
+products_schema = ProductSchema(many=True)
+
+
+# Create Product
+@app.route('/product', methods=['POST'])
+def add_product():
+    name = request.json['name']
+    description = request.json['description']
+    price = request.json['price']
+    qty = request.json['qty']
+
+    new_product = Product(name, description, price, qty)
+
+    db.session.add(new_product)
+    db.session.commit()
+
+    return product_schema.jsonify(new_product)
+
+
+# Get All Products
+@app.route('/', methods=['GET'])
+def get_products():
+    all_products = Product.query.all()
+    result = products_schema.dump(all_products)
+    return jsonify(result)
+
+
+# Run the Server
 if __name__ == '__main__':
+    db.create_all()
 
-	app.run(debug = True)
+    app.run(debug=True)
