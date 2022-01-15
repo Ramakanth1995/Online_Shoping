@@ -2,11 +2,58 @@
 <html>
 <body>
 
-<h1>My First Heading</h1>
+<h1>Add Details</h1>
 
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+</style>
+</head>
+<body>
+<form action="/movies"  method="POST">
+  <label for="lname">title:</label><br>
+  <input type="text" id="title" name="title"><br><br>
+
+    <label for="lname">year:</label><br>
+  <input type="text" id="year" name="year"><br><br>
+
+    <label for="lname">genre:</label><br>
+  <input type="text" id="genre" name="genre"><br><br>
+
+  <input type="submit" value="Submit">
+
+</form>
+
+<br>
+
+<table>
+
+  <tr>
+    {% for i in column_names %}
+    <th>{{ i }}</th>{% endfor %}<th>Actions</th>
+  </tr>
+
+  <tr>
 {% for i in name %}
-     {{ i }} <h1> {{ i['title'] }}</h1>
-      {% endfor %}
+    <td>{{ i['id'] }}</td>
+    <td>{{ i['title'] }}</td><td>{{ i['year'] }}</td><td>{{ i['genre'] }}</td>
+    <td><a href="/movies/{{ i['id'] }}">Edit</a></p>
+    <a href="/moviess/{{ i['id'] }}">Delete</a></p></td>
+  </tr>
+
+  {% endfor %}
+</table>
+
+</body>
+
+
+
+</html>
 
 </body>
 </html>

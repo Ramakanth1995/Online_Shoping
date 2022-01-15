@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>Add Details</h1>
+
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+</style>
+</head>
+<body>
+<form action="/updated"  method="POST">
+
+    <label for="lname">title:</label><br>
+  <input type="text" id="title" name="title", value = "{{ data['title'] }}"><br><br>
+
+    <label for="lname">year:</label><br>
+  <input type="text" id="year" name="year" , value = "{{ data['year'] }}"><br><br>
+
+    <label for="lname">genre:</label><br>
+  <input type="text" id="genre" name="genre" , value = "{{ data['genre'] }}"><br><br>
+
+  <input type="submit" value="Update">
+
+</form>
+
+
+</body>
+
+
+
+</html>
+
+</body>
+</html>
+
