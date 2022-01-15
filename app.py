@@ -31,24 +31,27 @@ def get_Grocery_table_by_Item_No(Item_No):
 def add_Grocery_table():
     global Grocery_tablelist_records, c_names
 
-    #Item_Name,Quantity_Remain = Quantity_Remain,Item_Cost = Item_Cost,Expiry_Date = Expiry_Date,Manufactured_By= Manufactured_By,Item_Type = Item_Type,Item_Code = Item_Code
+    '''#Item_Name,Quantity_Remain = Quantity_Remain,Item_Cost = Item_Cost,Expiry_Date = Expiry_Date,Manufactured_By= Manufactured_By,Item_Type = Item_Type,Item_Code = Item_Code
     request.method = 'POST'
     request_data = {}
+    request_data["Item_Name"] = i[0]
+    request_data["Quantity_Remain"] = i[1]
+    request_data["Item_Cost"] = i[2]
 
-    request_data["Item_Name"] = 'Sandwich Wheat'
-    request_data["Quantity_Remain"] = 93
-    request_data["Item_Cost"] = 9.99
-
-    request_data["Manufactured_By"] = 'Essential Everyday '
-    request_data["Item_Type"] = 'BREAD&BAKERY'
-    request_data["Item_Code"] = 'BREAD-1478523690'
+    request_data["Manufactured_By"] = i[3]
+    request_data["Item_Type"] = i[4]
+    request_data["Item_Code"] = i[5]
 
     Grocery_tablelist_records = Grocery_table.get_all_Grocery_tables(1)
     print(request_data)
-    #request_data = request.get_json()  # getting data from client
-    Grocery_table.add_Grocery_table(request_data["Item_Name"],request_data["Quantity_Remain"],request_data["Item_Cost"],request_data["Manufactured_By"],request_data["Item_Type"],request_data["Item_Code"])
-    response = Response("Grocery_table added", 201, mimetype='application/json')
-    return get_Grocery_tables()
+    # request_data = request.get_json()  # getting data from client
+    Grocery_table.add_Grocery_table(request_data["Item_Name"], request_data["Quantity_Remain"],
+                                    request_data["Item_Cost"], request_data["Manufactured_By"],
+                                    request_data["Item_Type"], request_data["Item_Code"])
+        
+
+    #response = Response("Grocery_table added", 201, mimetype='application/json')
+    return get_Grocery_tables()'''
 
 
 # route to update Grocery_table with PUT method
