@@ -35,11 +35,12 @@ class Grocery_table(db.Model):
         #db.create_all()
         return [Grocery_table.json(grocery_table) for grocery_table in Grocery_table.query.all()]
 
+
         #return Grocery_table.query.all()
 
     def get_Grocery_table(_Item_No):
         '''function to get Grocery_table using the Item_No of the Grocery_table as parameter'''
-        return [Grocery_table.json(Grocery_table.query.filter_by(Item_No=_Item_No).first())]
+        return [Grocery_table.json(Grocery_table.query.filter_by(Item_Code=_Item_No).first())]
         # Grocery_table.json() coverts our output to json
         # the filter_by method filters the query by the Item_No
         # the .first() method displays the first value

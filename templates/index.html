@@ -133,6 +133,8 @@ a.button:hover{
   <img src="../static/{{ i['Item_Code'] }}.jpg">
 	<figcaption>{{ i['Item_Name'] }}</figcaption>
     <span class="price">Rs.. {{ i['Item_Cost'] }}</span>
+	  <a class="button" href="{{url_for('cart', type =  i['Item_Code']  )}}">Add To Cart</a>
+    <a class="button" href="/s/{{ i['Item_Code'] }}">Buy Now</a>
 
 
 	</figure>

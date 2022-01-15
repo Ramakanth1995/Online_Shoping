@@ -17,15 +17,6 @@ def get_Grocery_tables():
     #return jsonify({'Grocery_tables': Grocery_table.get_all_Grocery_tables(1)})
     return render_template('index.html', name=Grocery_tablelist_records,column_names = c_names)
 
-
-
-# route to get Grocery_table by Item_No
-'''@app.route('/Grocery_tables/<int:Item_No>', methods=['GET', 'POST','PUT','DELETE'])
-def get_Grocery_table_by_Item_No(Item_No):
-    return_value = Grocery_table.get_Grocery_table(Item_No)
-    return jsonify(return_value)'''
-
-
 # route to add new Grocery_table
 @app.route('/Grocery_tables', methods=['GET', 'POST','PUT','DELETE'])
 def add_Grocery_table():
@@ -50,8 +41,8 @@ def add_Grocery_table():
                                     request_data["Item_Type"], request_data["Item_Code"])
         
 
-    #response = Response("Grocery_table added", 201, mimetype='application/json')
-    return get_Grocery_tables()'''
+    #response = Response("Grocery_table added", 201, mimetype='application/json')'''
+    return get_Grocery_tables()
 
 
 # route to update Grocery_table with PUT method
@@ -92,7 +83,108 @@ def remove_Grocery_table(Item_No):
 
     return get_Grocery_tables()
 
+#login realted code
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    global curently_login,loging_error_message,User_Name,User_Email,l
+    if request.method == "POST":
 
+        #User_Email = request.form.get("uname")
+        uname = request.form.get("username")
+        psw = request.form.get("password")
+        print(uname, psw)
+        '''request.method == "GET"
+        cur = mysql.connection.cursor()
+        query_string = "SELECT * FROM login WHERE email_id = %s"
+        cur.execute(query_string, (uname,))
+        cur.connection.commit()
+        login_details = cur.fetchall()
+        cart_records = mysql.connection.cursor()
+        if len(login_details)>=1:
+            if uname == login_details[0][1] and psw == login_details[0][6]:
+                curently_login = True
+                User_Name = login_details[0][0]
+                User_Email = login_details[0][1]
+                if curently_login == True:
+                    q = "select item_code from cart where email = %s;"
+                    cart_records.execute(q, (User_Name,))
+                    cart_records.connection.commit()
+                    cart_records = cart_records.fetchall()
+
+                    for rows in cart_records:
+                        l.append(rows[0])
+                    k = set(l)
+                    l = list(k)
+
+                return render_template('index.html', name=grocerylist_records, names=grocerylist_recordss,
+                                       car_count=len(l),User_Name = User_Name)
+            else:
+                loging_error_message = "user name and password is not mateching please try again"
+
+                return render_template('login.html', loging_error_message=loging_error_message)'''
+
+    return render_template('login.html')
+cart_items = []
+cart_items_list = []
+# route to get Grocery_table by Item_No
+@app.route('/Grocery_tables/<int:Item_No>', methods=['GET', 'POST','PUT','DELETE'])
+def get_Grocery_table_by_Item_No(Item_Code):
+    return_value = Grocery_table.get_Grocery_table(Item_Code)
+    cart_items.append(return_value)
+    return jsonify(return_value)
+
+@app.route('/display', methods=['GET', 'POST'])
+def display(records=None):
+    return render_template('display.html', name=cart_items, price=10, car_count=2)
+
+
+@app.route('/cart',methods=['GET', 'POST'])
+def cart(records=None):
+    global form_data, l,curently_login,cart_items
+
+    form_data = request.args.get('type')
+    r = get_Grocery_table_by_Item_No(form_data)
+    return render_template('index.html', name=Grocery_tablelist_records,column_names = c_names)
+
+@app.route('/checkout', methods=['GET', 'POST'])
+def checkout(records=None):
+
+    return render_template('checkout.html')
+
+
+@app.route('/register',methods=['GET', 'POST'])
+def register(records=None):
+    global form_data, l,curently_login
+
+    form_data = request.args.get('type')
+
+    print(form_data)
+    response = Response(form_data, 201, mimetype='application/json')
+    return render_template('register.html')
+
+app.route('/order_history', methods=['GET', 'POST'])
+def order_history():
+    global order_history_records
+
+    return render_template('order_history.html')
+
+name = None
+@app.route('/s/<name>', methods=['GET', 'POST'])
+def product_overview(name):
+
+    return render_template('/product_overview.html')
+
+@app.route('/signout', methods=['GET', 'POST'])
+def signout():
+    global curently_login,car_count,User_Name,name,names,l
+
+
+    return render_template('index.html')
+
+@app.route('/<name>', methods=['GET', 'POST'])
+def add(name):
+
+    return render_template( 'drwopdown.html')
 if __name__ == "__main__":
     db.create_all()
     app.run(port=1234, debug=True)

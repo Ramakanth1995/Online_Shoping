@@ -262,17 +262,17 @@ td.checkout {
 
         <tbody>
           <!-- shopping cart contents -->
-          {% for i in name %}
+          {% for i in name %}{% for d in i %}
           <tr class="productitm">
             <form method="POST" action="/checkout">
             <!-- http://www.inkydeals.com/deal/ginormous-bundle/ -->
-            <td><img src="../static/{{ i[7] }}.jpg" class="thumb"></td>
+            <td><img src="../static/{{ d['Item_Code'] }}.jpg" class="thumb"></td>
             <td><input type="number" id="quantit" value = '1' name="quantity" min="1" max="5" class="qtyinput"></td>
-            <td>{{ i[1] }}</td>
-            <td>Rs. {{ i[3] }}</td>
-            <td><span class="remove"><li><a href="{{url_for('display', type =  i[7]  )}}"><img src="./static/h1ldGRr.png" alt="X"></a></li></span></td>
+            <td>{{ d['Item_Name'] }}</td>
+            <td>Rs. {{ d['Item_Cost'] }}</td>
+            <td><span class="remove"><li><a href="{{url_for('display', type =  d['Item_Code']  )}}"><img src="./static/h1ldGRr.png" alt="X"></a></li></span></td>
           </tr>
-          {% endfor %}
+          {% endfor %}{% endfor %}
 
           <!-- tax + subtotal -->
           <tr class="extracosts">
