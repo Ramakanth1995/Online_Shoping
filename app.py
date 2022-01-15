@@ -71,17 +71,12 @@ def updated():
     return render_template('basic.html', name=Grocery_tablelist_records,column_names = c_names)
 
 # route to delete Grocery_table using the DELETE method
-@app.route('/Grocery_tabless/<int:Item_No>', methods=['GET', 'POST','PUT','DELETE'])
+'''@app.route('/Grocery_tabless/<int:Item_No>', methods=['GET', 'POST','PUT','DELETE'])
 def remove_Grocery_table(Item_No):
-    '''Function to delete Grocery_table from our database'''
-    print(request.method,Item_No)
 
-    if Item_No ==1 :
-        response = Response("Item_No 1 we could not Deleted", status=200, mimetype='application/json')
-    else:
-        Grocery_table.delete_Grocery_table(Item_No)
+    Grocery_table.delete_Grocery_table(Item_No)
 
-    return get_Grocery_tables()
+    return get_Grocery_tables()'''
 
 #login realted code
 @app.route('/login', methods=['GET', 'POST'])
