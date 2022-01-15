@@ -130,11 +130,10 @@ a.button:hover{
 	<div id="columns" class="columns_4">
 		{% for i in name %}
   <figure>
-  <img src="../static/{{ i[7] }}.jpg">
-	<figcaption>{{ i[1] }}</figcaption>
-    <span class="price">Rs.. {{ i[3] }}</span>
-    <a class="button" href="{{url_for('cart', type =  i[7]  )}}">Add To Cart</a>
-    <a class="button" href="/s/{{ i[7] }}">Buy Now</a>
+  <img src="../static/{{ i['Item_Code'] }}.jpg">
+	<figcaption>{{ i['Item_Name'] }}</figcaption>
+    <span class="price">Rs.. {{ i['Item_Cost'] }}</span>
+
 
 	</figure>
  {% endfor %}

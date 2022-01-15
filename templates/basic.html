@@ -38,12 +38,14 @@ table, th, td {
     <th>{{ i }}</th>{% endfor %}<th>Actions</th>
   </tr>
 
-  <tr>
+  <tr>#Item_Name,Quantity_Remain,Item_Cost,Expiry_Date,Manufactured_By,Item_Type,Item_Code
+
 {% for i in name %}
-    <td>{{ i['id'] }}</td>
-    <td>{{ i['title'] }}</td><td>{{ i['year'] }}</td><td>{{ i['genre'] }}</td>
-    <td><a href="/movies/{{ i['id'] }}">Edit</a></p>
-    <a href="/moviess/{{ i['id'] }}">Delete</a></p></td>
+    <td>{{ i['Item_No'] }}</td>
+    <td>{{ i['Item_Name'] }}</td><td>{{ i['Quantity_Remain'] }}</td><td>{{ i['Item_Cost'] }}</td>
+      <td>{{ i['Manufactured_By'] }}</td><td>{{ i['Item_Type'] }}</td><td>{{ i['Item_Code'] }}</td>
+    <td><a href="/Grocery_tables/{{ i['Item_No'] }}">Edit</a></p>
+    <a href="/Grocery_tabless/{{ i['Item_No'] }}">Delete</a></p></td>
   </tr>
 
   {% endfor %}

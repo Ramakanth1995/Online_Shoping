@@ -147,8 +147,8 @@ body {
       <i class="fa fa-caret-down"></i>
     </button>
     <div class="dropdown-content">
-      {% for i in names %}
-      <a href={{ i[6] }}>{{ i[6] }}</a>
+      {% for i in name %}
+      <a href="{{ i['Item_Name'] }}" }}>{{ i['Item_Name'] }}</a>
       {% endfor %}
     </div>
 

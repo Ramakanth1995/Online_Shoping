@@ -14,17 +14,17 @@ table, th, td {
 }
 </style>
 </head>
-<body>
+<body>#Item_Name,Quantity_Remain,Item_Cost,Expiry_Date,Manufactured_By,Item_Type,Item_Code
 <form action="/updated"  method="POST">
 
     <label for="lname">title:</label><br>
-  <input type="text" id="title" name="title", value = "{{ data['title'] }}"><br><br>
+  <input type="text" id="title" name="title", value = "{{ data['Item_Name'] }}"><br><br>
 
     <label for="lname">year:</label><br>
-  <input type="text" id="year" name="year" , value = "{{ data['year'] }}"><br><br>
+  <input type="text" id="year" name="year" , value = "{{ data['Quantity_Remain'] }}"><br><br>
 
     <label for="lname">genre:</label><br>
-  <input type="text" id="genre" name="genre" , value = "{{ data['genre'] }}"><br><br>
+  <input type="text" id="genre" name="genre" , value = "{{ data['Item_Cost'] }}"><br><br>
 
   <input type="submit" value="Update">
 
