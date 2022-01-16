@@ -1,10 +1,14 @@
 from settings import *
 import json
 # Initializing our database
+from tables import Cart_table_dataa, cart_table_dataa
+
 db = SQLAlchemy(app)
 
 
 # the class Grocery_table will inherit the db.Model of SQLAlchemy
+
+
 class Grocery_table(db.Model):
     __tablename__ = 'Grocery_tables'  # creating a table name #Grocery_tablelist
     Item_No = db.Column(db.Integer, primary_key=True)  # this is the primary key
@@ -16,11 +20,11 @@ class Grocery_table(db.Model):
     Item_Code  = db.Column(db.String(80), nullable=False)
 
     def json(self):
-
         return {'Item_No': self.Item_No, 'Item_Name': self.Item_Name,
                 'Quantity_Remain': self.Quantity_Remain, 'Item_Cost': self.Item_Cost,
                 'Manufactured_By': self.Manufactured_By,'Item_Type': self.Item_Type,'Item_Code': self.Item_Code}
-        # this method we are defining will convert our output to json
+    def cart_json(self):
+        return {'item_number': self.item_number, 'item_code': self.item_code,'email': self.email}
 
     def add_Grocery_table(_Item_Name,_Quantity_Remain,_Item_Cost,_Manufactured_By,_Item_Type,_Item_Code):
         '''function to add Grocery_table to database using _title, _year, _genre
@@ -30,11 +34,15 @@ class Grocery_table(db.Model):
         db.session.add(new_Grocery_table)  # add new Grocery_table to database session
         db.session.commit()  # commit changes to session
 
+    def add_cart_table(item_code,email):
+        new_cart_table = Cart_table_dataa(item_code = item_code,email = email)
+        cart_table_dataa.session.add(new_cart_table)
+        cart_table_dataa.session.commit()
+
     def get_all_Grocery_tables(self):
         '''function to get all Grocery_tables in our database'''
         #db.create_all()
         return [Grocery_table.json(grocery_table) for grocery_table in Grocery_table.query.all()]
-
 
         #return Grocery_table.query.all()
 

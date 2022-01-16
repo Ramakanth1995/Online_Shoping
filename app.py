@@ -1,10 +1,15 @@
 from flask import render_template
+import sqlalchemy as db
 
 from grocery import *
-from datetime import datetime
+from settings import *
+import json
+cart_table = SQLAlchemy(app)
 
 Grocery_tablelist_records = None
 c_names = None
+
+
 # route to get all Grocery_tables
 @app.route('/', methods=['GET', 'POST','PUT','DELETE'])
 def get_Grocery_tables():
@@ -71,6 +76,7 @@ def updated():
     return render_template('basic.html', name=Grocery_tablelist_records,column_names = c_names)
 
 # route to delete Grocery_table using the DELETE method
+
 '''@app.route('/Grocery_tabless/<int:Item_No>', methods=['GET', 'POST','PUT','DELETE'])
 def remove_Grocery_table(Item_No):
 
@@ -120,41 +126,58 @@ def login():
 
     return render_template('login.html')
 cart_items = []
-cart_items_list = []
+checkout_price = 0
+
 # route to get Grocery_table by Item_No
 @app.route('/Grocery_tables/<int:Item_No>', methods=['GET', 'POST','PUT','DELETE'])
 def get_Grocery_table_by_Item_No(Item_Code):
     return_value = Grocery_table.get_Grocery_table(Item_Code)
-    cart_items.append(return_value)
+    cart_items.extend(return_value)
     return jsonify(return_value)
-
 @app.route('/display', methods=['GET', 'POST'])
 def display(records=None):
-    return render_template('display.html', name=cart_items, price=10, car_count=2)
+    global checkout_price
+    price_list = []
+    form_data = request.args.get('type')
+    for c,price in enumerate(cart_items):
+        if form_data in price.values():
+            cart_items.pop(c)
+
+    for price in cart_items:
+        price_list.append(price['Item_Cost'])
+
+    checkout_price = sum(price_list)
+
+    return render_template('display.html', name=cart_items, price=sum(price_list), car_count=len(price_list))
 
 
 @app.route('/cart',methods=['GET', 'POST'])
-def cart(records=None):
+def cart():
     global form_data, l,curently_login,cart_items
 
     form_data = request.args.get('type')
-    r = get_Grocery_table_by_Item_No(form_data)
+    get_Grocery_table_by_Item_No(form_data)
     return render_template('index.html', name=Grocery_tablelist_records,column_names = c_names)
+
 
 @app.route('/checkout', methods=['GET', 'POST'])
 def checkout(records=None):
+    code = 0
+    if checkout_price<= 0:
+        return render_template('index.html', name=Grocery_tablelist_records,column_names = c_names)
+    else:
+        for i in cart_items:
+            code = i['Item_Code']
+        Grocery_table.add_cart_table(code,'None')
+    s =  [Grocery_table.cart_json(grocery_table) for grocery_table in Cart_table_dataa.query.all()]
+    #print(s,'s')
 
-    return render_template('checkout.html')
-
+    return render_template('checkout.html',name=cart_items,price = checkout_price)
 
 @app.route('/register',methods=['GET', 'POST'])
 def register(records=None):
     global form_data, l,curently_login
-
     form_data = request.args.get('type')
-
-    print(form_data)
-    response = Response(form_data, 201, mimetype='application/json')
     return render_template('register.html')
 
 app.route('/order_history', methods=['GET', 'POST'])
@@ -181,5 +204,5 @@ def add(name):
 
     return render_template( 'drwopdown.html')
 if __name__ == "__main__":
-    db.create_all()
-    app.run(port=1234, debug=True)
+    #db.create_all()
+    app.run(debug=True)

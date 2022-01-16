@@ -185,7 +185,7 @@ span.price {
     <div class="container">
       <h4>Cart <span class="price" style="color:black"><i class="fa fa-shopping-cart"></i> <b>{{ car_count }}</b></span></h4>
       {% for i in name %}
-      <p><a href="#">{{ i[1] }}</a> <span class="price">${{ i[3] }}</span></p>
+      <p><a href="#">{{ i['Item_Name'] }}</a> <span class="price">${{ i['Item_Cost'] }}</span></p>
 {% endfor %}
       <hr>
       <p>Total <span class="price" style="color:black"><b>${{ price }}</b></span></p>
