@@ -139,7 +139,6 @@ def display(records=None):
 @app.route('/cart',methods=['GET', 'POST'])
 def cart():
     global form_data, l,curently_login,cart_items
-
     form_data = request.args.get('type')
     get_Grocery_table_by_Item_No(form_data)
     return render_template('index.html', name=Grocery_tablelist_records,column_names = c_names)
@@ -150,7 +149,6 @@ def checkout():
 
     if User_Name == None:
         return render_template('login.html')
-
     else:
         code = 0
         if checkout_price <= 0:
@@ -159,14 +157,12 @@ def checkout():
             for i in cart_items:
                 code = i['Item_Code']
             Grocery_table.add_cart_table(code, 'None')
-
-
-
     return render_template('checkout.html',name=cart_items,price = checkout_price)
 
 @app.route('/invoice', methods=['GET', 'POST'])
 def invoice():
-    email_id = 'demo'
+    print(User_Name)
+    email_id = User_Name
     order_id = 1
     print(cart_items)
     for i in cart_items:
@@ -175,6 +171,7 @@ def invoice():
         total_cost = i['Item_Cost']
 
     Grocery_table.add_orderhistory_table( email_id,order_id,item_Name,item_code,total_cost)
+
     return render_template('index.html', name=Grocery_tablelist_records,column_names = c_names)
 
 
@@ -207,7 +204,7 @@ def order_history():
     print(d,'d')
 
     for i in d:
-        if 'demo' == i['email_id']:
+        if User_Name == i['email_id']:
             order_history_records.append(i)
     print(order_history_records)
 
@@ -222,9 +219,9 @@ def product_overview(name):
 @app.route('/signout', methods=['GET', 'POST'])
 def signout():
     global curently_login,car_count,User_Name,name,names,l
+    User_Name = None
 
-
-    return render_template('index.html')
+    return render_template('index.html', name=Grocery_tablelist_records,column_names = c_names)
 
 @app.route('/<name>', methods=['GET', 'POST'])
 def add(name):
