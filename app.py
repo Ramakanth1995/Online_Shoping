@@ -83,48 +83,33 @@ def remove_Grocery_table(Item_No):
     Grocery_table.delete_Grocery_table(Item_No)
 
     return get_Grocery_tables()'''
-
+User_Name = None
 #login realted code
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     global curently_login,loging_error_message,User_Name,User_Email,l
+    valid_user = False
     if request.method == "POST":
-
         #User_Email = request.form.get("uname")
         uname = request.form.get("username")
         psw = request.form.get("password")
         print(uname, psw)
-        '''request.method == "GET"
-        cur = mysql.connection.cursor()
-        query_string = "SELECT * FROM login WHERE email_id = %s"
-        cur.execute(query_string, (uname,))
-        cur.connection.commit()
-        login_details = cur.fetchall()
-        cart_records = mysql.connection.cursor()
-        if len(login_details)>=1:
-            if uname == login_details[0][1] and psw == login_details[0][6]:
-                curently_login = True
-                User_Name = login_details[0][0]
-                User_Email = login_details[0][1]
-                if curently_login == True:
-                    q = "select item_code from cart where email = %s;"
-                    cart_records.execute(q, (User_Name,))
-                    cart_records.connection.commit()
-                    cart_records = cart_records.fetchall()
 
-                    for rows in cart_records:
-                        l.append(rows[0])
-                    k = set(l)
-                    l = list(k)
+        s = [Grocery_table.login_json(grocery_table) for grocery_table in Login_table_dataa.query.all()]
+        print(s,'l')
+        for name in s:
+            if uname in name.values():
+                if psw == name['password']:
+                    valid_user = True
+                    User_Name = name['username']
 
-                return render_template('index.html', name=grocerylist_records, names=grocerylist_recordss,
-                                       car_count=len(l),User_Name = User_Name)
-            else:
-                loging_error_message = "user name and password is not mateching please try again"
-
-                return render_template('login.html', loging_error_message=loging_error_message)'''
+        if valid_user == True:
+            return render_template('index.html', name=Grocery_tablelist_records, column_names=c_names)
+        else:
+            return render_template('login.html')
 
     return render_template('login.html')
+
 cart_items = []
 checkout_price = 0
 
@@ -161,30 +146,72 @@ def cart():
 
 
 @app.route('/checkout', methods=['GET', 'POST'])
-def checkout(records=None):
-    code = 0
-    if checkout_price<= 0:
-        return render_template('index.html', name=Grocery_tablelist_records,column_names = c_names)
+def checkout():
+
+    if User_Name == None:
+        return render_template('login.html')
+
     else:
-        for i in cart_items:
-            code = i['Item_Code']
-        Grocery_table.add_cart_table(code,'None')
-    s =  [Grocery_table.cart_json(grocery_table) for grocery_table in Cart_table_dataa.query.all()]
-    #print(s,'s')
+        code = 0
+        if checkout_price <= 0:
+            return render_template('index.html', name=Grocery_tablelist_records, column_names=c_names)
+        else:
+            for i in cart_items:
+                code = i['Item_Code']
+            Grocery_table.add_cart_table(code, 'None')
+
+
 
     return render_template('checkout.html',name=cart_items,price = checkout_price)
 
+@app.route('/invoice', methods=['GET', 'POST'])
+def invoice():
+    email_id = 'demo'
+    order_id = 1
+    print(cart_items)
+    for i in cart_items:
+        item_Name = i['Item_Name']
+        item_code = i['Item_Code']
+        total_cost = i['Item_Cost']
+
+    Grocery_table.add_orderhistory_table( email_id,order_id,item_Name,item_code,total_cost)
+    return render_template('index.html', name=Grocery_tablelist_records,column_names = c_names)
+
+
 @app.route('/register',methods=['GET', 'POST'])
-def register(records=None):
+def register():
     global form_data, l,curently_login
-    form_data = request.args.get('type')
+    # User_Email = request.form.get("uname")
+    username = request.form.get("username")
+    Email = request.form.get("email")
+    psw = request.form.get("password")
+    psw2 = request.form.get("pass")
+    if  Email or psw or psw2:
+        Grocery_table.add_login_table(username, Email, psw)
+        s = [Grocery_table.login_json(grocery_table) for grocery_table in Login_table_dataa.query.all()]
+        return render_template('index.html', name=Grocery_tablelist_records,column_names = c_names)
+
+    else:
+        return render_template('register.html')
+
     return render_template('register.html')
 
-app.route('/order_history', methods=['GET', 'POST'])
+@app.route('/order_history', methods=['GET', 'POST'])
 def order_history():
     global order_history_records
+    order_history_records = []
+    #d = [Grocery_table.history_json(Order_history_dataa.query.filter_by(email_id='demo').first())]
 
-    return render_template('order_history.html')
+    d = [Grocery_table.history_json(grocery_table) for grocery_table in Order_history_dataa.query.all()]
+
+    print(d,'d')
+
+    for i in d:
+        if 'demo' == i['email_id']:
+            order_history_records.append(i)
+    print(order_history_records)
+
+    return render_template('order_history.html',records = order_history_records)
 
 name = None
 @app.route('/s/<name>', methods=['GET', 'POST'])

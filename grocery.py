@@ -1,7 +1,8 @@
 from settings import *
 import json
 # Initializing our database
-from tables import Cart_table_dataa, cart_table_dataa
+from tables import Cart_table_dataa, cart_table_dataa, login_table_dataa, Login_table_dataa, order_history_dataa, \
+    Order_history_dataa
 
 db = SQLAlchemy(app)
 
@@ -26,6 +27,12 @@ class Grocery_table(db.Model):
     def cart_json(self):
         return {'item_number': self.item_number, 'item_code': self.item_code,'email': self.email}
 
+    def login_json(self):
+        return {'item_number': self.item_number, 'username': self.username,'email_id': self.email_id,'password': self.password}
+
+    def history_json(self):
+        return {'item_number': self.item_number, 'email_id': self.email_id,'order_id':self.order_id,'item_Name':self.item_Name,'item_code':self.item_code,'total_cost':self.total_cost}
+
     def add_Grocery_table(_Item_Name,_Quantity_Remain,_Item_Cost,_Manufactured_By,_Item_Type,_Item_Code):
         '''function to add Grocery_table to database using _title, _year, _genre
         as parameters'''
@@ -38,6 +45,21 @@ class Grocery_table(db.Model):
         new_cart_table = Cart_table_dataa(item_code = item_code,email = email)
         cart_table_dataa.session.add(new_cart_table)
         cart_table_dataa.session.commit()
+        print('sucess cart table')
+
+    def add_login_table(username,email_id,password):
+
+        new_cart_table = Login_table_dataa(username = username,email_id = email_id,password = password)
+        login_table_dataa.session.add(new_cart_table)
+        login_table_dataa.session.commit()
+        print('sucess login table')
+
+    def add_orderhistory_table(email_id,order_id,item_Name,item_code,total_cost):
+        new_cart_table = Order_history_dataa(email_id=email_id,order_id=order_id,item_Name=item_Name,item_code=item_code,total_cost=total_cost)
+        order_history_dataa.session.add(new_cart_table)
+        order_history_dataa.session.commit()
+        print('sucessfully add to orderhistory table')
+
 
     def get_all_Grocery_tables(self):
         '''function to get all Grocery_tables in our database'''
