@@ -157,7 +157,7 @@ def checkout():
             for i in cart_items:
                 code = i['Item_Code']
             Grocery_table.add_cart_table(code, 'None')
-            cart_items.clear()
+            
     return render_template('checkout.html',name=cart_items,price = checkout_price)
 
 @app.route('/invoice', methods=['GET', 'POST'])
@@ -172,6 +172,8 @@ def invoice():
         total_cost = i['Item_Cost']
 
     Grocery_table.add_orderhistory_table( email_id,order_id,item_Name,item_code,total_cost)
+    
+    cart_items.clear()
 
     return render_template('index.html', name=Grocery_tablelist_records,column_names = c_names)
 
