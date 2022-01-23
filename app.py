@@ -157,6 +157,7 @@ def checkout():
             for i in cart_items:
                 code = i['Item_Code']
             Grocery_table.add_cart_table(code, 'None')
+            cart_items.clear()
     return render_template('checkout.html',name=cart_items,price = checkout_price)
 
 @app.route('/invoice', methods=['GET', 'POST'])
